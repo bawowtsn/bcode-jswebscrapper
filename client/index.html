@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#"> /* This fixes favicon.ico 404 not found error*/
+    <title>js web scrapper</title>
+</head>
+
+<body>
+    <h1>SetupTourist</h1>
+
+    <h4>Add a new creator</h4>
+    <input class="channel-input" type="text" placeholder="Paste YouTube url" />
+    <button class="moyobutton" type="submit" onclick="submitChannel()">Submit</button>
+    <div class="container"></div>
+    
+    <script>
+        function submitChannel() {
+            const channelURL = document.querySelector('.channel-input').value;
+            //this sends a request to our server by running url link (req)
+            fetch('http://localhost:3000/creators', {
+                //we activate the post methodin the server
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({channelURL})
+            });
+         
+            // send to server...
+        }
+
+        // First create helper functions to help you add new items to the document
+        function newEl(type, attrs={}) {
+            const el = document.createElement(type);
+            for (let attr in attrs) {
+                const value = attrs[attr];
+                if (attr == 'innerText') el.innerText = value;
+                else el.setAttribute(attr, value);
+            }
+            return el;
+        }
+
+            async function loadCreators() {
+                //this sends a request to our server
+                const res = await fetch('http://localhost:3000/creators'); 
+                //result from server is creators array object, and we turn it into json
+                const creators = await res.json(); 
+
+                const ctr = document.querySelector('.container');
+
+                //we use the result from url "get controller/route" array to create elements in page 
+                creators.forEach(creator => {
+                    const card = newEl ('div', {class: 'card'});
+                    const title = newEl ('h4',{innerText: creator.name});
+                    const img = newEl ('img', {src: creator.img});
+                    ctr.appendChild(card); 
+                    card.appendChild(title);
+                    card.appendChild(img);
+                })
+            }
+
+            loadCreators();
+
+
+
+        // const creators = [
+        //     {Title: 'best channel', views: '500', channel-name: 'Code Drip', img: 'https://'},
+        //     {name: 'Dave Lee', img: 'https://'},
+        //     {name: 'MKBHD', img: 'https://'},
+        // ]
+
+        
+
+        
+        // const card = newEl ('div', {class: 'card'});
+        // ctr.appendChild(card);
+
+        
+    </script>
+
+    <style>
+        .container {
+            background-color: blue;
+            display: flex;
+            /* background-color: orange; */
+        }
+        .card {
+            margin: 5px;
+            padding: 20px;
+            border: 1px solid blue;
+            /* background-color: blue; */
+        }
+
+    </style>
+</body>
+</html>
